@@ -26,4 +26,4 @@ spec:
         - name: APIHOST
           value: "currency-conversion-and-exchange-rates.p.rapidapi.com"
         - name: FLASK_ENV
-          value: "development"
+          value: "dev"

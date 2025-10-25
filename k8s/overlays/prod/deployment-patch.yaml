@@ -9,5 +9,5 @@ spec:
         - name: currency-converter
           env:
             - name: FLASK_ENV
-              value: "production"
+              value: "prod"
 

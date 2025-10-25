@@ -9,4 +9,4 @@ spec:
         - name: currency-converter
           env:
             - name: FLASK_ENV
-              value: "development"
+              value: "dev"
