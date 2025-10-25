@@ -1,0 +1,12 @@
+server:
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hostname: "argocd.local"
+    paths:
+      - /
+    pathType: Prefix
+    tls: []   # optional, use later for HTTPS
+configs:
+  params:
+    server.insecure: true
