@@ -1,0 +1,11 @@
+controller:
+  ingressClassResource:
+    default: true
+    name: nginx
+  service:
+    type: NodePort
+    nodePorts:
+      http: 30700
+      https: 31390
+  publishService:
+    enabled: true
