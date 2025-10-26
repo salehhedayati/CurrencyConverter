@@ -1,0 +1,29 @@
+controller:
+  admin:
+    user: admin
+    password: admin123
+  ingress:
+    enabled: true
+    apiVersion: networking.k8s.io/v1
+    ingressClassName: nginx
+    hostName: jenkins.local
+    paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: jenkins
+            port:
+              number: 8080
+    tls: []
+  installPlugins:
+    - docker-plugin
+    - docker-workflow:latest
+  sidecars:
+    docker:
+      image: docker:dind
+      args: "--host=tcp://127.0.0.1:2375"
+  additionalVolumes:
+    - type: HostPath
+      hostPath: /var/run/docker.sock
+      mountPath: /var/run/docker.sock
