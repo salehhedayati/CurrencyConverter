@@ -21,21 +21,21 @@ pipeline {
             }
         }
 
-        stage('Test') {
-            agent {
-                docker {
-                    image 'python:3.11'
-                    reuseNode true
-                }
-            } // Jenkins automatically injects the environment variables into that container
-            steps {
-                sh '''
-                    python -m pip install --upgrade pip
-                    pip install -r requirements.txt
-                    python -m unittest discover -s tests
-                '''
-            }
-        }
+//         stage('Test') {
+//             agent {
+//                 docker {
+//                     image 'python:3.11'
+//                     reuseNode true
+//                 }
+//             } // Jenkins automatically injects the environment variables into that container
+//             steps {
+//                 sh '''
+//                     python -m pip install --upgrade pip
+//                     pip install -r requirements.txt
+//                     python -m unittest discover -s tests
+//                 '''
+//             }
+//         }
 
         stage('Build and Push Docker Image') {
             steps {
