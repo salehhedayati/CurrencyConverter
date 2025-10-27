@@ -43,8 +43,7 @@ agent:
           memory: 2Gi
   podLabels:
     jenkins-jenkins-agent: "true"
-    customJenkinsLabels:
-      - "jenkins-jenkins-agent"
+    customJenkinsLabels: "jenkins-jenkins-agent"
   envVars:
     - name: DOCKER_HOST
       value: tcp://localhost:2375
