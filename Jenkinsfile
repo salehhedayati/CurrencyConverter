@@ -19,7 +19,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-                sh 'git config --global --add safe.directory "$(pwd)"'
             }
         }
 
@@ -44,6 +43,7 @@ pipeline {
                 container('dind') {
                     script {
                         // Short commit hash for tagging
+                        sh 'git config --global --add safe.directory "$(pwd)"'
                         def shortCommit = sh(returnStdout: true, script: "git rev-parse --short=7 HEAD").trim()
                         def imageTag = "${shortCommit}"
                         def latestTag = "latest"
