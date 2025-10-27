@@ -40,22 +40,29 @@ pipeline {
 
         stage('Build and Push Docker Image') {
             steps {
-                script {
-                    def shortCommit = sh(returnStdout: true, script: "git rev-parse --short=7 HEAD").trim()
-                    def imageTag = "${shortCommit}"
-                    def latestTag = "latest"
+                container('dind') {
+                    script {
+                        // Short commit hash for tagging
+                        def shortCommit = sh(returnStdout: true, script: "git rev-parse --short=7 HEAD").trim()
+                        def imageTag = "${shortCommit}"
+                        def latestTag = "latest"
 
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh """
-                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                            docker build -t $DOCKER_IMAGE:$imageTag .
-                            docker tag $DOCKER_IMAGE:$imageTag $DOCKER_IMAGE:$latestTag
-                            docker push $DOCKER_IMAGE:$imageTag
-                            docker push $DOCKER_IMAGE:$latestTag
-                        """
+                        withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                            // Wait a few seconds for Docker daemon to be fully ready
+                            sh """
+                                echo "Waiting for Docker daemon to start..."
+                                sleep 5
+                                docker info
+                                echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                                docker build -t $DOCKER_IMAGE:$imageTag .
+                                docker tag $DOCKER_IMAGE:$imageTag $DOCKER_IMAGE:$latestTag
+                                docker push $DOCKER_IMAGE:$imageTag
+                                docker push $DOCKER_IMAGE:$latestTag
+                            """
+                        }
+                        // Save image tag for the next stage
+                        env.IMAGE_TAG = imageTag
                     }
-                    // Save image tag for next stage
-                    env.IMAGE_TAG = imageTag
                 }
             }
         }

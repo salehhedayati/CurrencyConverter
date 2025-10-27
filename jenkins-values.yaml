@@ -32,8 +32,7 @@ agent:
         tag: dind
       command: "dockerd-entrypoint.sh"
       args: "--host=tcp://0.0.0.0:2375"
-      securityContext:
-        privileged: true
+      privileged: true
       resources:
         requests:
           cpu: 500m
