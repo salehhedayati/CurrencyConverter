@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: currency-converter
-        image: salehhedayati/currencyconverter:1.0
+        image: salehhedayati/currencyconverter:0b2f945
         ports:
         - containerPort: 5555
         env:
