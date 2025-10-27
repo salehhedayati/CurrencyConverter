@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'salehhedayati/currencyconverter'
-        APIHOST = credentials('APIHOST')  // optional, for your tests
-        APIKEY = credentials('APIKEY')    // optional, for your tests
+//         APIHOST = credentials('APIHOST')  // optional, for your tests
+//         APIKEY = credentials('APIKEY')    // optional, for your tests
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-cred') // Jenkins credentials ID
         DOCKER_HOST = 'tcp://localhost:2375'
         IMAGE_TAG = "" // This will be set dynamically
