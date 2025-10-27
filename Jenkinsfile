@@ -57,9 +57,9 @@ pipeline {
                                 sleep 5
                                 docker info
                                 echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                                docker build -t $IMAGE_NAME:$imageTag .
-                                docker tag $IMAGE_NAME:$imageTag $IMAGE_NAME:$latestTag
-                                docker push $IMAGE_NAME:$imageTag
+                                docker build -t $IMAGE_NAME:$IMAGE_TAG .
+                                docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:$latestTag
+                                docker push $IMAGE_NAME:$IMAGE_TAG
                                 docker push $IMAGE_NAME:$latestTag
                             """
                         }
