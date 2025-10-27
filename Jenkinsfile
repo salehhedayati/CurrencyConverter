@@ -73,10 +73,12 @@ pipeline {
                 sh """
                     git config user.name "Jenkins CI"
                     git config user.email "jenkins@local"
+                    git fetch origin main
+                    git checkout main
                     git pull --rebase origin main
                     sed -i 's|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${IMAGE_TAG}|' k8s/base/deployment.yaml
                     git add k8s/base/deployment.yaml
-                    git commit -m "Update image to ${IMAGE_TAG}"
+                    git commit -m "Update image to ${IMAGE_TAG}" || echo "No changes to commit"
                     git push origin main
                 """
             }
