@@ -17,13 +17,34 @@ controller:
               number: 8080
     tls: []
   installPlugins:
+    - kubernetes:4384.v1b_6367f393d9
+    - workflow-aggregator:608.v67378e9d3db_1
+    - git:5.8.0
+    - configuration-as-code:2006.v001a_2ca_6b_574
     - docker-plugin
     - docker-workflow:latest
-  sidecars:
-    docker:
-      image: docker:dind
-      args: "--host=tcp://127.0.0.1:2375"
-  additionalVolumes:
-    - type: HostPath
-      hostPath: /var/run/docker.sock
-      mountPath: /var/run/docker.sock
+
+agent:
+  additionalContainers:
+    - sideContainerName: dind
+      image:
+        repository: docker
+        tag: dind
+      command: "dockerd-entrypoint.sh"
+      args: "--host=tcp://0.0.0.0:2375"
+      securityContext:
+        privileged: true
+      resources:
+        requests:
+          cpu: 500m
+          memory: 1Gi
+        limits:
+          cpu: 1
+          memory: 2Gi
+  podLabels:
+    jenkins-jenkins-agent: "true"
+    customJenkinsLabels:
+      - "jenkins-jenkins-agent"
+  envVars:
+    - name: DOCKER_HOST
+      value: tcp://localhost:2375

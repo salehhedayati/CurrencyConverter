@@ -1,11 +1,12 @@
 pipeline {
-    agent any
+    agent { label 'jenkins-jenkins-agent' }
 
     environment {
         DOCKER_IMAGE = 'salehhedayati/currencyconverter'
         APIHOST = credentials('APIHOST')  // optional, for your tests
         APIKEY = credentials('APIKEY')    // optional, for your tests
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-cred') // Jenkins credentials ID
+        DOCKER_HOST = 'tcp://localhost:2375'
         IMAGE_TAG = "" // This will be set dynamically
     }
 
@@ -68,7 +69,7 @@ pipeline {
                     sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:${IMAGE_TAG}|' k8s/base/deployment.yaml
                     git add k8s/base/deployment.yaml
                     git commit -m "Update image to ${IMAGE_TAG}"
-git push origin main
+                    git push origin main
                 """
             }
         }
