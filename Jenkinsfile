@@ -2,12 +2,13 @@ pipeline {
     agent { label 'jenkins-jenkins-agent' }
 
     environment {
-        DOCKER_IMAGE = 'salehhedayati/currencyconverter'
+        IMAGE_TAG = "${env.GIT_COMMIT.take(7)}"
+        IMAGE_NAME = "salehhedayati/currencyconverter"
+        IMAGE = "${IMAGE_NAME}:${IMAGE_TAG}"
 //         APIHOST = credentials('APIHOST')  // optional, for your tests
 //         APIKEY = credentials('APIKEY')    // optional, for your tests
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-cred') // Jenkins credentials ID
         DOCKER_HOST = 'tcp://localhost:2375'
-        IMAGE_TAG = "" // This will be set dynamically
     }
 
     triggers {
@@ -44,8 +45,9 @@ pipeline {
                     script {
                         // Short commit hash for tagging
                         sh 'git config --global --add safe.directory "$(pwd)"'
+//                         def IMAGE_TAG = GIT_COMMIT.take(7)
                         def shortCommit = sh(returnStdout: true, script: "git rev-parse --short=7 HEAD").trim()
-                        def imageTag = "${shortCommit}"
+                        env.IMAGE_TAG = shortCommit // ✅ set globally
                         def latestTag = "latest"
 
                         withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
@@ -55,14 +57,12 @@ pipeline {
                                 sleep 5
                                 docker info
                                 echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                                docker build -t $DOCKER_IMAGE:$imageTag .
-                                docker tag $DOCKER_IMAGE:$imageTag $DOCKER_IMAGE:$latestTag
-                                docker push $DOCKER_IMAGE:$imageTag
-                                docker push $DOCKER_IMAGE:$latestTag
+                                docker build -t $IMAGE_NAME:$imageTag .
+                                docker tag $IMAGE_NAME:$imageTag $IMAGE_NAME:$latestTag
+                                docker push $IMAGE_NAME:$imageTag
+                                docker push $IMAGE_NAME:$latestTag
                             """
                         }
-                        // Save image tag for the next stage
-                        env.IMAGE_TAG = imageTag
                     }
                 }
             }
@@ -74,7 +74,7 @@ pipeline {
                     git config user.name "Jenkins CI"
                     git config user.email "jenkins@local"
                     git pull --rebase origin main
-                    sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:${IMAGE_TAG}|' k8s/base/deployment.yaml
+                    sed -i 's|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${IMAGE_TAG}|' k8s/base/deployment.yaml
                     git add k8s/base/deployment.yaml
                     git commit -m "Update image to ${IMAGE_TAG}"
                     git push origin main

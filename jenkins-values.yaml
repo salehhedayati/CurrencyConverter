@@ -30,6 +30,7 @@ agent:
       image:
         repository: docker
         tag: dind
+#        TO DO: env is not in the official chart values, check the indentation or another key if needed, otherwise in the UI
       env:
         - name: DOCKER_TLS_CERTDIR
           value: ""
