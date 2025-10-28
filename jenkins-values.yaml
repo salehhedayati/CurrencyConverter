@@ -31,9 +31,9 @@ agent:
         repository: docker
         tag: dind
 #        TO DO: env is not in the official chart values, check the indentation or another key if needed, otherwise in the UI
-      env:
-        - name: DOCKER_TLS_CERTDIR
-          value: ""
+        env:
+          - name: DOCKER_TLS_CERTDIR
+            value: ""
       command: "dockerd-entrypoint.sh"
       args: "--host=tcp://0.0.0.0:2375"
       privileged: true

@@ -20,6 +20,20 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
+                script {
+                    // Skip build if last commit was authored by Jenkins CI
+                    def lastCommitAuthor = sh(
+                        returnStdout: true,
+                        script: "git log -1 --pretty=format:'%an'"
+                    ).trim()
+
+                    if (lastCommitAuthor == "Jenkins CI") {
+                        echo "🚫 Last commit authored by Jenkins CI — skipping pipeline to prevent self-trigger."
+                        currentBuild.result = 'SUCCESS'
+                        // Abort the rest of the pipeline gracefully
+                        error("Stopping build: Jenkins CI commit detected.")
+                    }
+                }
             }
         }
 
@@ -45,7 +59,6 @@ pipeline {
                     script {
                         // Short commit hash for tagging
                         sh 'git config --global --add safe.directory "$(pwd)"'
-//                         def IMAGE_TAG = GIT_COMMIT.take(7)
                         def shortCommit = sh(returnStdout: true, script: "git rev-parse --short=7 HEAD").trim()
                         env.IMAGE_TAG = shortCommit // ✅ set globally
                         def latestTag = "latest"
